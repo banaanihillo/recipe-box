@@ -14,24 +14,48 @@
     <h2> {{expandedRecipe.name}} </h2>
 
     <h3> Ingredients </h3>
-    <ul>
-      <li
-        v-for="ingredient in expandedRecipe.ingredients"
-        :key="ingredient"
-      >
-        {{ingredient}}
-      </li>
-    </ul>
+    <section>
+      <ul>
+        <li
+          v-for="ingredient in expandedRecipe.ingredients"
+          :key="ingredient"
+        >
+          {{ingredient}}
+        </li>
+      </ul>
+
+      <button @click="editingIngredients=!editingIngredients">
+        Edit ingredients
+      </button>
+      <EditRecipe
+        v-if="editingIngredients"
+        formLabel="Ingredients"
+        @edit-recipe="editRecipe"
+        :recipeName="expandedRecipe.name"
+      />
+    </section>
 
     <h3> Instructions </h3>
-    <ol>
-      <li
-        v-for="instruction in expandedRecipe.instructions"
-        :key="instruction"
-      >
-        {{instruction}}
-      </li>
-    </ol>
+    <section>
+      <ol>
+        <li
+          v-for="instruction in expandedRecipe.instructions"
+          :key="instruction"
+        >
+          {{instruction}}
+        </li>
+      </ol>
+
+      <button @click="editingInstructions=!editingInstructions">
+        Edit instructions
+      </button>
+      <EditRecipe
+        v-if="editingInstructions"
+        formLabel="Instructions"
+        @edit-recipe="editRecipe"
+        :recipeName="expandedRecipe.name"
+      />
+    </section>
 
   </span>
   <hr />
@@ -53,10 +77,12 @@
 
 <script>
 import AddRecipe from "./components/AddRecipe.vue"
+import EditRecipe from "./components/EditRecipe.vue"
 
 export default {
   components: {
-    AddRecipe
+    AddRecipe,
+    EditRecipe
   },
   data() {
     return {
@@ -92,12 +118,15 @@ export default {
         }
       ],
       expandedRecipe: null,
-      formOpen: false
+      formOpen: false,
+      editingIngredients: false,
+      editingInstructions: false
     }
   },
   methods: {
     expandRecipe(recipe) {
       this.expandedRecipe = recipe
+      this.collapseForms()
     },
     addRecipe(input) {
       this.recipes = [
@@ -105,6 +134,29 @@ export default {
         input
       ]
       this.formOpen = false
+    },
+    editRecipe(input) {
+      const recipeToEdit = this.recipes.find((recipe) => {
+        return recipe.name === input.name
+      })
+      const replacedRecipe = {
+        ...recipeToEdit,
+        [input.type]: input.steps
+      }
+
+      this.expandedRecipe = replacedRecipe 
+      this.recipes = this.recipes.map((recipe) => {
+        return (
+          recipe.name === input.name
+            ? replacedRecipe
+            : recipe
+        )
+      })
+      this.collapseForms()
+    },
+    collapseForms() {
+      this.editingIngredients = false
+      this.editingInstructions = false
     }
   }
 }
@@ -141,5 +193,16 @@ button {
 
 .recipes li:nth-child(even) button {
   background-color: violet;
+}
+
+button:focus,
+button:hover {
+  border: 2px solid darkmagenta;
+}
+
+input,
+textarea {
+  background-color: plum;
+  margin-bottom: 1em;
 }
 </style>
