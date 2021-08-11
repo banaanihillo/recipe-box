@@ -17,9 +17,9 @@
     <ul>
       <li
         v-for="ingredient in expandedRecipe.ingredients"
-        :key="ingredient.ingredient"
+        :key="ingredient"
       >
-        {{ingredient.amount}} {{ingredient.ingredient}}
+        {{ingredient}}
       </li>
     </ul>
 
@@ -34,34 +34,40 @@
     </ol>
 
   </span>
+  <hr />
+
+  <h2> Add new recipe </h2>
+  <span v-if="formOpen">
+    <button @click="formOpen=false">
+      Close form
+    </button>
+    <AddRecipe @add-recipe="addRecipe" />
+  </span>
+  <span v-else>
+    <button @click="formOpen=true">
+      Open form
+    </button>
+  </span>
 </main>
 </template>
 
-<script> //
+<script>
+import AddRecipe from "./components/AddRecipe.vue"
 
 export default {
+  components: {
+    AddRecipe
+  },
   data() {
     return {
       recipes: [
         {
           name: "Chickpeas with Rice & Peanuts",
           ingredients: [
-            {
-              ingredient: "chickpeas",
-              amount: "160g"
-            },
-            {
-              ingredient: "white rice",
-              amount: "160g"
-            },
-            {
-              ingredient: "peanuts",
-              amount: "40g"
-            },
-            {
-              ingredient: "iodized salt",
-              amount: "0.1g"
-            }
+            "160g chickpeas, dried",
+            "160g white rice",
+            "40g peanuts",
+            "0.1g iodized salt"
           ],
           instructions: [
             "Soak chickpeas in water for 8+ hours, or overnight.",
@@ -78,22 +84,27 @@ export default {
         {
           name: "Müsli with Seeds and Dried Berries",
           ingredients: [
-            {
-              ingredient: "Müsli",
-              amount: "60g"
-            }
+            "60g müsli"
           ],
           instructions: [
             "Pour müsli into bowl."
           ]
         }
       ],
-      expandedRecipe: null
+      expandedRecipe: null,
+      formOpen: false
     }
   },
   methods: {
     expandRecipe(recipe) {
       this.expandedRecipe = recipe
+    },
+    addRecipe(input) {
+      this.recipes = [
+        ...this.recipes,
+        input
+      ]
+      this.formOpen = false
     }
   }
 }
@@ -121,6 +132,9 @@ li {
 
 button {
   background-color: plum;
+}
+
+.recipes button {
   width: 100%;
   font-size: 1.2em;
 }
