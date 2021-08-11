@@ -64,13 +64,7 @@ export default {
 }
 </script>
 
-<style scoped>
-input,
-textarea {
-  background-color: plum;
-  margin-bottom: 1em;
-}
-
+<style scoped> /* */
 textarea {
   width: 100%;
 }
