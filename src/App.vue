@@ -57,6 +57,11 @@
       />
     </section>
 
+    <section class="delete">
+      <button @click="deleteRecipe(expandedRecipe)">
+        Delete
+      </button>
+    </section>
   </span>
   <hr />
 
@@ -173,6 +178,17 @@ export default {
         "recipes",
         JSON.stringify(this.recipes)
       )
+    },
+    deleteRecipe(selectedRecipe) {
+      const recipeToDelete = this.recipes.find((recipe) => {
+        return recipe.name === selectedRecipe.name
+      })
+      const filteredRecipes = this.recipes.filter((recipe) => {
+        return recipe.name !== recipeToDelete.name
+      })
+      this.recipes = filteredRecipes
+      this.expandedRecipe = null
+      this.saveRecipes()
     }
   },
   created() {
@@ -223,5 +239,15 @@ input,
 textarea {
   background-color: plum;
   margin-bottom: 1em;
+}
+
+.delete {
+  border: 2px solid tomato;
+  padding: 1em;
+  margin: 1em;
+}
+
+.delete button {
+  background-color: salmon;
 }
 </style>
