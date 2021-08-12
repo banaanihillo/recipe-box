@@ -86,7 +86,56 @@ export default {
   },
   data() {
     return {
-      recipes: [
+      recipes: [],
+      expandedRecipe: null,
+      formOpen: false,
+      editingIngredients: false,
+      editingInstructions: false
+    }
+  },
+  methods: {
+    expandRecipe(recipe) {
+      this.expandedRecipe = recipe
+      this.collapseForms()
+    },
+    addRecipe(input) {
+      this.recipes = [
+        ...this.recipes,
+        input
+      ]
+      this.saveRecipes()
+      this.formOpen = false
+    },
+    editRecipe(input) {
+      const recipeToEdit = this.recipes.find((recipe) => {
+        return recipe.name === input.name
+      })
+      const replacedRecipe = {
+        ...recipeToEdit,
+        [input.type]: input.steps
+      }
+
+      this.expandedRecipe = replacedRecipe 
+      this.recipes = this.recipes.map((recipe) => {
+        return (
+          recipe.name === input.name
+            ? replacedRecipe
+            : recipe
+        )
+      })
+      this.saveRecipes()
+      this.collapseForms()
+    },
+    collapseForms() {
+      this.editingIngredients = false
+      this.editingInstructions = false
+    },
+    initializeRecipes() {
+      const existingRecipes = localStorage.getItem("recipes")
+      if (existingRecipes) {
+        return JSON.parse(existingRecipes)
+      } else {
+        return [
         {
           name: "Chickpeas with Rice & Peanuts",
           ingredients: [
@@ -116,48 +165,18 @@ export default {
             "Pour müsli into bowl."
           ]
         }
-      ],
-      expandedRecipe: null,
-      formOpen: false,
-      editingIngredients: false,
-      editingInstructions: false
+        ]
+      }
+    },
+    saveRecipes() {
+      localStorage.setItem(
+        "recipes",
+        JSON.stringify(this.recipes)
+      )
     }
   },
-  methods: {
-    expandRecipe(recipe) {
-      this.expandedRecipe = recipe
-      this.collapseForms()
-    },
-    addRecipe(input) {
-      this.recipes = [
-        ...this.recipes,
-        input
-      ]
-      this.formOpen = false
-    },
-    editRecipe(input) {
-      const recipeToEdit = this.recipes.find((recipe) => {
-        return recipe.name === input.name
-      })
-      const replacedRecipe = {
-        ...recipeToEdit,
-        [input.type]: input.steps
-      }
-
-      this.expandedRecipe = replacedRecipe 
-      this.recipes = this.recipes.map((recipe) => {
-        return (
-          recipe.name === input.name
-            ? replacedRecipe
-            : recipe
-        )
-      })
-      this.collapseForms()
-    },
-    collapseForms() {
-      this.editingIngredients = false
-      this.editingInstructions = false
-    }
+  created() {
+    this.recipes = this.initializeRecipes()
   }
 }
 </script>
